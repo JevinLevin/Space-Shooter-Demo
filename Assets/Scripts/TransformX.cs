@@ -25,11 +25,30 @@ public class TransformX : MonoBehaviour
     public Vector3 Radians => new Vector3(rotation.x * MathsfxConst.Deg2Rad, rotation.y * MathsfxConst.Deg2Rad, rotation.z * MathsfxConst.Deg2Rad);
     public Quaternion QuatRotation => Quaternion.FromEuler(rotation);
 
+    public Vector3 Forward => new((Matrix4by4.RotationMatrix(Radians) * Vector3.Forward));
+    public Vector3 Right => -Vector3.Cross(Forward, Vector3.Up);
+    public Vector3 Up => Vector3.Cross(Forward, Right);
+
     private void Awake()
     {
-        mesh = GetComponent<MeshFilter>();
+        mesh = GetComponentInChildren<MeshFilter>();
 
         modelVertices = Vector3.ToFx(mesh.mesh.vertices);
+    }
+    
+    private void OnDrawGizmos()
+    {
+        Gizmos.matrix = Matrix4by4.TranslateMatrix(position).ToMatrix4x4();
+        
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(Vector3.Zero.ToVector3(), Right.ToVector3().normalized);
+        
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(Vector3.Zero.ToVector3(), Up.ToVector3().normalized);
+        
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(Vector3.Zero.ToVector3(), Forward.ToVector3().normalized);
+
     }
 
     private void Update()

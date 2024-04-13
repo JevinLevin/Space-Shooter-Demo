@@ -129,6 +129,13 @@ namespace Mathsfx
 
     }
 
+    public void Clamp(float max)
+    {
+        x = Mathf.Clamp(x, -max, max);
+        y = Mathf.Clamp(y, -max, max);
+        z = Mathf.Clamp(z, -max, max);
+    }
+
     public static Vector3 AngleAxis(float radians, Vector3 axis, Vector3 vertex)
     {
         Vector3 result = (vertex * Mathf.Cos(radians)) +
@@ -369,6 +376,33 @@ namespace Mathsfx
 
         return result;
     }
+
+    public Matrix4x4 ToMatrix4x4()
+    {
+        Matrix4x4 result = new Matrix4x4();
+
+        result.m00 = values[0, 0];
+        result.m01 = values[0, 1];
+        result.m02 = values[0, 2];
+        result.m03 = values[0, 3];
+        
+        result.m10 = values[1, 0];
+        result.m11 = values[1, 1];
+        result.m12 = values[1, 2];
+        result.m13 = values[1, 3];
+        
+        result.m20 = values[2, 0];
+        result.m21 = values[2, 1];
+        result.m22 = values[2, 2];
+        result.m23 = values[2, 3];
+        
+        result.m30 = values[3, 0];
+        result.m31 = values[3, 1];
+        result.m32 = values[3, 2];
+        result.m33 = values[3, 3];
+
+        return result;
+    }
 }
     
     public class Quaternion
@@ -417,8 +451,19 @@ namespace Mathsfx
             result.x = vec.x;
             result.y = vec.y;
             result.z = vec.z;
-
+            
+            //result.w = a.w * b.w - (a.x * b.x + a.y * b.y + a.z * b.z);
+//
+            //Vector3 aVector = new Vector3(a.x, a.y, a.z);
+            //Vector3 bVector = new Vector3(b.x, b.y, b.z);
+            //Vector3 cross = Vector3.Cross(aVector, bVector);
+//
+            //result.x = a.w * b.x + a.x * b.w + cross.x;
+            //result.y = a.w * b.y + a.y * b.w + cross.y;
+            //result.z = a.w * b.z + a.z * b.w + cross.z;
+            
             return result;
+
         }
 
         public Quaternion Inverse()
