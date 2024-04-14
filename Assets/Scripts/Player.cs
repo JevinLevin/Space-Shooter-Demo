@@ -7,8 +7,10 @@ using Vector3 = Mathsfx.Vector3;
 using Quaternion = Mathsfx.Quaternion;
 
 
-public class PropHandler : MonoBehaviour
+public class Player : MonoBehaviour
 {
+    public static Player Instance;
+    
     [SerializeField] private TransformX transformx;
 
     [SerializeField] private float panSpeed = 3;
@@ -16,7 +18,15 @@ public class PropHandler : MonoBehaviour
     [SerializeField] private float scaleSpeed = 3;
 
     [SerializeField] private Transform cameraPivot;
-    
+
+    private Vector3 targetRotation;
+
+    private void Awake()
+    {
+        Instance = this;
+        targetRotation = transformx.rotation;
+    }
+
 
     private void Update()
     {
@@ -45,16 +55,27 @@ public class PropHandler : MonoBehaviour
             Vector3 rotInput = new Vector3(result.x,result.y,result.z);
             Vector3 rotValue = rotInput * rotSpeed * Time.deltaTime;
             
-            transformx.rotation += rotValue;
+            targetRotation += rotValue;
+
 
             // Camera needs to follow cube rotation
-            cameraPivot.eulerAngles = new UnityEngine.Vector3(transformx.rotation.x, transformx.rotation.y, transformx.rotation.z);
+            cameraPivot.eulerAngles = new UnityEngine.Vector3(targetRotation.x, targetRotation.y, targetRotation.z);
         }
+        
+        transformx.rotation = Vector3.Lerp(transformx.rotation, targetRotation,  easeOutCubic(0.5f));
+        //transformx.rotation = Quaternion.Slerp(transformx.QuatRotation, Quaternion.FromEuler(targetRotation), 0.25f).ToEuler();
+
         
         // Scale object based on scroll wheel input
         float scaleInput = Input.GetAxis("Mouse ScrollWheel");
         transformx.scale += Vector3.One * scaleInput * scaleSpeed;
         
+
+    }
+    
+    private float easeOutCubic(float t)
+    {
+        return 1 - Mathf.Pow(1 - t, 3);
 
     }
 }

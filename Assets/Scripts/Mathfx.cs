@@ -31,7 +31,21 @@ namespace Mathsfx
         this.z = z;
     }
     
+    public Vector3()
+    {
+        x = 0;
+        y = 0;
+        z = 0;
+    }
+    
     public Vector3(UnityEngine.Vector3 input)
+    {
+        x = input.x;
+        y = input.y;
+        z = input.z;
+    }
+
+    public Vector3(Vector4 input)
     {
         x = input.x;
         y = input.y;
@@ -180,6 +194,21 @@ namespace Mathsfx
     }
     
 }
+
+    public class Vector4 : Vector3
+    {
+        public float w;
+
+        public Vector4() : base(0,0,0)
+        {
+            w = 0;
+        }
+
+        public Vector4(float x, float y, float z, float w) : base(x,y,z)
+        {
+            this.w = w;
+        }
+    }
     
     public class Matrix4by4
 {
@@ -240,7 +269,7 @@ namespace Mathsfx
 
     public static Vector4 operator *(Matrix4by4 lhs, Vector4 rhs)
     {
-        Vector4 result;
+        Vector4 result = new Vector4();
         result.x = lhs.values[0, 0] * rhs.x + lhs.values[0, 1] * rhs.y + lhs.values[0, 2] * rhs.z + lhs.values[0, 3] * rhs.w;
         result.y = lhs.values[1, 0] * rhs.x + lhs.values[1, 1] * rhs.y + lhs.values[1, 2] * rhs.z + lhs.values[1, 3] * rhs.w;
         result.z = lhs.values[2, 0] * rhs.x + lhs.values[2, 1] * rhs.y + lhs.values[2, 2] * rhs.z + lhs.values[2, 3] * rhs.w;
@@ -252,7 +281,7 @@ namespace Mathsfx
 
     public static Vector4 operator *(Matrix4by4 lhs, Vector3 rhs)
     {
-        Vector4 result;
+        Vector4 result = new Vector4();
         result.x = lhs.values[0, 0] * rhs.x + lhs.values[0, 1] * rhs.y + lhs.values[0, 2] * rhs.z + lhs.values[0, 3] * 1;
         result.y = lhs.values[1, 0] * rhs.x + lhs.values[1, 1] * rhs.y + lhs.values[1, 2] * rhs.z + lhs.values[1, 3] * 1;
         result.z = lhs.values[2, 0] * rhs.x + lhs.values[2, 1] * rhs.y + lhs.values[2, 2] * rhs.z + lhs.values[2, 3] * 1;
@@ -486,8 +515,35 @@ namespace Mathsfx
             z = axis.z;
         }
 
+        public Vector4 GetAxisAngle()
+        {
+            Vector4 result = new();
+
+            float half = Mathf.Acos(w);
+            result.w = half * 2;
+
+            result.x = x / Mathf.Sin(half);
+            result.y = y / Mathf.Sin(half);
+            result.z = z / Mathf.Sin(half);
+
+            return result;
+        }
+
+        public static Quaternion Slerp(Quaternion a, Quaternion b, float t)
+        {
+            t = Mathf.Clamp(t, 0.0f, 1.0f);
+
+            Quaternion c = b * a.Inverse();
+            Vector4 axisAngle = c.GetAxisAngle();
+            Quaternion result = new Quaternion(axisAngle.w * t, new Vector3(axisAngle.x, axisAngle.y, axisAngle.z));
+
+            return result * a;
+        }
+
+
         public static Quaternion FromEuler(Vector3 euler)
         {
+
             float xOver2 = euler.x * Mathf.Deg2Rad * 0.5f;
             float yOver2 = euler.y * Mathf.Deg2Rad * 0.5f;
             float zOver2 = euler.z * Mathf.Deg2Rad * 0.5f;
@@ -507,6 +563,38 @@ namespace Mathsfx
 
             return result;
         }
+        
+        public Vector3 ToEuler()
+        {
+            Vector3 angles = new();
+
+            // roll / x
+            float sinr_cosp = 2 * (w * x + y * z);
+            float cosr_cosp = 1 - 2 * (x * x + y * y);
+            angles.x = Mathf.Atan2(sinr_cosp, cosr_cosp);
+
+            // pitch / y
+            float sinp = 2 * (w * y - z * x);
+            if (Mathf.Abs(sinp) >= 1)
+            {
+                angles.y = Mathf.PI / 2 * Mathf.Sign(sinp);
+            }
+            else
+            {
+                angles.y = Mathf.Asin(sinp);
+            }
+
+            // yaw / z
+            float siny_cosp = 2 * (w * z + x * y);
+            float cosy_cosp = 1 - 2 * (y * y + z * z);
+            angles.z = Mathf.Atan2(siny_cosp, cosy_cosp);
+
+            return angles;
+        }
+        
+        
+        
+        
     
     }
     
