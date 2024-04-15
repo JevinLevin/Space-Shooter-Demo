@@ -38,24 +38,30 @@ public class Player : MonoBehaviour
         transformx.position += panInput * panSpeed * Time.deltaTime;
         cameraPivot.position += (panInput * panSpeed * Time.deltaTime).ToVector3();
 
+        // Calculate mouse delta
+        Vector3 mousePosition = new Vector3(Input.mousePosition);
+        Vector3 mouseDelta = mousePosition - lastMousePosition;
+        lastMousePosition = mousePosition;
+
         if (Input.GetMouseButton(1))
         {
-            // Calculate mouse delta
-            Vector3 mousePosition = new Vector3(Input.mousePosition);
-            Vector3 mouseDelta = mousePosition - lastMousePosition;
-            lastMousePosition = mousePosition;
+
+
+            Vector3 spinDirection = Vector3.Cross(Vector3.Forward, mouseDelta);
+
+            Quaternion result = new Quaternion(mouseDelta.Magnitude, spinDirection);
 
             // Creates angle axis quaternion based on mouse input
-            Quaternion horizontal = new Quaternion(Input.GetAxis("Mouse X"), -Vector3.Up);
-            Quaternion vertical = new Quaternion(Input.GetAxis("Mouse Y"), Vector3.Right);
+            //Quaternion horizontal = new Quaternion(Input.GetAxis("Mouse X"), -Vector3.Up);
+            //Quaternion vertical = new Quaternion(Input.GetAxis("Mouse Y"), Vector3.Right);
 
             // Create global down quaternion
-            Quaternion down = new Quaternion(-Vector3.Up);
+            //Quaternion down = new Quaternion(-Vector3.Up);
             // Create global right quaternion
-            Quaternion right = new Quaternion(Vector3.Right);
+            //Quaternion right = new Quaternion(Vector3.Right);
 
             // Combine inputs
-            Quaternion result = down * horizontal * down.Inverse() * right * vertical * right.Inverse();
+            //Quaternion result = down * horizontal * down.Inverse() * right * vertical * right.Inverse();
             
 
             // Store result as euler angle
@@ -69,7 +75,7 @@ public class Player : MonoBehaviour
             cameraPivot.eulerAngles = new UnityEngine.Vector3(targetRotation.x, targetRotation.y, targetRotation.z);
         }
         
-        transformx.rotation = Vector3.Lerp(transformx.rotation, targetRotation,  easeOutCubic(0.5f));
+        transformx.rotation = Vector3.Lerp(transformx.rotation, targetRotation,  easeOutCubic(0.1f));
         //transformx.rotation = Quaternion.Slerp(transformx.QuatRotation, Quaternion.FromEuler(targetRotation), 0.25f).ToEuler();
 
         

@@ -4950,7 +4950,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetMax: 90
   speedRange: {x: 3, y: 10}
-  lifetime: 10
+  lifetime: 20
   destroyParticles: {fileID: 2577965108409933338}
 --- !u!54 &3979424639396729051
 Rigidbody:
