@@ -20,6 +20,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Transform cameraPivot;
 
     private Vector3 targetRotation;
+    private Vector3 lastMousePosition = Vector3.Zero;
 
     private void Awake()
     {
@@ -39,6 +40,11 @@ public class Player : MonoBehaviour
 
         if (Input.GetMouseButton(1))
         {
+            // Calculate mouse delta
+            Vector3 mousePosition = new Vector3(Input.mousePosition);
+            Vector3 mouseDelta = mousePosition - lastMousePosition;
+            lastMousePosition = mousePosition;
+
             // Creates angle axis quaternion based on mouse input
             Quaternion horizontal = new Quaternion(Input.GetAxis("Mouse X"), -Vector3.Up);
             Quaternion vertical = new Quaternion(Input.GetAxis("Mouse Y"), Vector3.Right);
@@ -51,6 +57,7 @@ public class Player : MonoBehaviour
             // Combine inputs
             Quaternion result = down * horizontal * down.Inverse() * right * vertical * right.Inverse();
             
+
             // Store result as euler angle
             Vector3 rotInput = new Vector3(result.x,result.y,result.z);
             Vector3 rotValue = rotInput * rotSpeed * Time.deltaTime;

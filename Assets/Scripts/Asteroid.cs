@@ -10,11 +10,15 @@ public class Asteroid : MonoBehaviour
 {
 
     private Transform player;
+    private Rigidbody rb;
 
     private Vector3 direction;
+    private float duration;
 
     [SerializeField] private float offsetMax;
     [SerializeField] private Vector2 speedRange;
+    [SerializeField] private float lifetime = 10;
+    [SerializeField] private ParticleSystem destroyParticles;
     private float speed;
 
     private void Awake()
@@ -23,24 +27,40 @@ public class Asteroid : MonoBehaviour
 
         speed = Random.Range(speedRange.x, speedRange.y);
 
+        rb = GetComponent<Rigidbody>();
+
     }
 
     public void Spawn()
     {
 
-        direction = new Vector3(player.position - transform.position);
+        direction = new Vector3(player.position - transform.position).Normalized;
 
         float radOffset = Random.Range(-offsetMax, offsetMax) * MathsfxConst.Deg2Rad;
-        Vector3 offset = Vector3.RadToVec(radOffset);
 
-        direction += offset;
-
-        direction = direction.Normalized;
+        direction = Vector3.AngleAxis(radOffset, Vector3.Up, direction);
+        
+        rb.AddTorque(Random.value, Random.value, Random.value, ForceMode.Impulse);
 
     }
 
     private void Update()
     {
         transform.position += direction.ToVector3() * (speed * Time.deltaTime);
+
+        duration += Time.deltaTime;
+        
+        if(duration >= lifetime)
+            Destroy(gameObject);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!other.CompareTag("Bullet")) return;
+        
+        Score.Instance.PlayerScore++;
+        destroyParticles.transform.parent = null;
+        destroyParticles.Play();
+        Destroy(gameObject);
     }
 }
