@@ -51,7 +51,7 @@ public class TransformX : MonoBehaviour
 
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         if(IsChanged())
             UpdateTransform();

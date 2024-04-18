@@ -552,7 +552,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   transformx: {fileID: 1242482824}
   panSpeed: 10
-  rotSpeed: 5
+  rotSpeed: 5000
   scaleSpeed: 1
   cameraPivot: {fileID: 512211965}
 --- !u!114 &1242482826

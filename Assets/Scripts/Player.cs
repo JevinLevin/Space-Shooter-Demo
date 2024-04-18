@@ -26,6 +26,9 @@ public class Player : MonoBehaviour
     {
         Instance = this;
         targetRotation = transformx.rotation;
+
+        //Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
 
@@ -39,17 +42,18 @@ public class Player : MonoBehaviour
         cameraPivot.position += (panInput * panSpeed * Time.deltaTime).ToVector3();
 
         // Calculate mouse delta
-        Vector3 mousePosition = new Vector3(Input.mousePosition);
-        Vector3 mouseDelta = mousePosition - lastMousePosition;
-        lastMousePosition = mousePosition;
-
+        //Vector3 mousePosition = new Vector3(Input.mousePosition);
+        //Vector3 mouseDelta = mousePosition - lastMousePosition;
+        //lastMousePosition = mousePosition;
+        Vector3 mouseDelta = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0);
+        
         if (Input.GetMouseButton(1))
         {
 
 
             Vector3 spinDirection = Vector3.Cross(Vector3.Forward, mouseDelta);
 
-            Quaternion result = new Quaternion(mouseDelta.Magnitude, spinDirection);
+            Quaternion quatDirection = new Quaternion(1, spinDirection);
 
             // Creates angle axis quaternion based on mouse input
             //Quaternion horizontal = new Quaternion(Input.GetAxis("Mouse X"), -Vector3.Up);
@@ -62,10 +66,16 @@ public class Player : MonoBehaviour
 
             // Combine inputs
             //Quaternion result = down * horizontal * down.Inverse() * right * vertical * right.Inverse();
+
+            Quaternion target = new Quaternion(-Vector3.Up);
+
+            Quaternion result = target * quatDirection * target.Inverse();
+            
             
 
             // Store result as euler angle
-            Vector3 rotInput = new Vector3(result.x,result.y,result.z);
+            Vector3 rotInput = result.GetAxis();
+            print(rotInput);
             Vector3 rotValue = rotInput * rotSpeed * Time.deltaTime;
             
             targetRotation += rotValue;
