@@ -13,17 +13,31 @@ public class TransformX : MonoBehaviour
     MeshFilter mesh;
     
     public Vector3 position = Vector3.Zero;
-    public Vector3 rotation = Vector3.Zero;
+    public Vector3 eulerRotation = Vector3.Zero;
+
+    private Quaternion rotation = Quaternion.Identity;
+    // TALK ABOUT PROBLEMS WHEN NOT NORMALIZING
+    public Quaternion Rotation
+    {
+        get => rotation;
+        
+        set
+        {
+            rotation = value.Normalized;
+            eulerRotation = rotation.ToEuler() * MathsfxConst.Rad2Deg;
+        }
+    }
     public Vector3 scale = Vector3.One;
 
     private Vector3 posBuffer;
-    private Vector3 rotBuffer;
+    private Vector3 eulerBuffer;
+    private Quaternion rotBuffer;
     private Vector3 scaleBuffer;
 
     private Vector3[] modelVertices;
 
     public Vector3 Radians => new Vector3(rotation.x * MathsfxConst.Deg2Rad, rotation.y * MathsfxConst.Deg2Rad, rotation.z * MathsfxConst.Deg2Rad);
-    public Quaternion QuatRotation => Quaternion.FromEuler(rotation);
+    public Vector3 EulerAngles => rotation.ToEuler();
 
     public Vector3 Forward => new((Matrix4by4.RotationMatrix(Radians) * Vector3.Forward));
     public Vector3 Right => -Vector3.Cross(Forward, Vector3.Up);
@@ -53,10 +67,14 @@ public class TransformX : MonoBehaviour
 
     private void LateUpdate()
     {
+        //if(eulerBuffer != eulerRotation && rotBuffer == rotation)
+        //    rotation = Quaternion.FromEuler(eulerRotation);
+        
         if(IsChanged())
             UpdateTransform();
 
         posBuffer = position;
+        eulerBuffer = eulerRotation;
         rotBuffer = rotation;
         scaleBuffer = scale;
     }
@@ -66,9 +84,13 @@ public class TransformX : MonoBehaviour
         Vector3[] worldVertices = modelVertices;
         Vector3[] result = new Vector3[worldVertices.Length];
 
+        Matrix4by4 trsMatrix = Matrix4by4.TRSMatrix(scale, Quaternion.Identity, position);
+        Matrix4by4 rotationMatrix = Matrix4by4.QuaternionToMatrix(rotation);
+        trsMatrix *= rotationMatrix;
+
         for (int i = 0; i < worldVertices.Length; i++)
         {
-            result[i] = new Vector3(Matrix4by4.TRSMatrix(scale, Radians,position) * worldVertices[i]);
+            result[i] = new Vector3(trsMatrix * worldVertices[i]);
         }
         
         mesh.mesh.vertices = Vector3.ToDefault(result);
@@ -86,7 +108,7 @@ public class TransformX : MonoBehaviour
         
         if (rotBuffer != rotation)
             return true;
-        
+
         if (scaleBuffer != scale)
             return true;
 

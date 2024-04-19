@@ -530,7 +530,7 @@ MonoBehaviour:
     x: 0
     y: 0
     z: 0
-  rotation:
+  eulerRotation:
     x: 0
     y: 0
     z: 0
@@ -551,8 +551,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   transformx: {fileID: 1242482824}
-  panSpeed: 10
-  rotSpeed: 5000
+  panSpeed: 25
+  rotSpeed: 10
   scaleSpeed: 1
   cameraPivot: {fileID: 512211965}
 --- !u!114 &1242482826

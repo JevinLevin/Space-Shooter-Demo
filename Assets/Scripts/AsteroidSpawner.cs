@@ -20,6 +20,7 @@ public class AsteroidSpawner : MonoBehaviour
         StartCoroutine(nameof(SpawnAsteroids));
     }
 
+
     private IEnumerator SpawnAsteroids()
     {
 
@@ -29,7 +30,7 @@ public class AsteroidSpawner : MonoBehaviour
             float ang = Random.Range(0, 359) * MathsfxConst.Deg2Rad;
             Vector3 dir = Vector3.RadToVec(ang).Normalized;
             float distance = Random.Range(spawnDistance.x, spawnDistance.y) * (Random.value < 0.5f ? -1 : 1);
-            Vector3 spawnPosition = new Vector3(Player.Instance.transform.position) + (dir * distance);
+            Vector3 spawnPosition = Player.Instance.position + (dir * distance);
             
             Asteroid newAsteroid = Instantiate(asteroidPrefab, spawnPosition.ToVector3(), Quaternion.identity, transform).GetComponent<Asteroid>();
         

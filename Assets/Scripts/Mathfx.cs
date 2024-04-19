@@ -15,6 +15,7 @@ namespace Mathsfx
     public float x, y, z;
 
     public float Magnitude => Mathf.Sqrt(x * x + y * y + z * z);
+    public Vector3 Normalized => this / Magnitude;
     public float Length => Magnitude;
 
     public static Vector3 Zero => new(0, 0, 0);
@@ -22,7 +23,6 @@ namespace Mathsfx
     public static Vector3 Up => new(0, 1, 0);
     public static Vector3 Right => new(1, 0, 0);
     public static Vector3 Forward => new(0, 0, 1);
-    public Vector3 Normalized => this / Magnitude;
 
     public Vector3(float x, float y, float z)
     {
@@ -368,8 +368,44 @@ namespace Mathsfx
     {
         return YawMatrix(rotation.y) * (PitchMatrix(rotation.x) * RollMatrix(rotation.z));
     }
+    
+    public static Matrix4by4 RotationMatrix(Quaternion rotation)
+    {
+        return QuaternionToMatrix(rotation);
+    }
+    
+    public static Matrix4by4 QuaternionToMatrix(Quaternion q)
+    {
+        Matrix4by4 m = Identity;
+    
+        float xx = q.x * q.x;
+        float xy = q.x * q.y;
+        float xz = q.x * q.z;
+        float xw = q.x * q.w;
 
-    public static Matrix4by4 TRSMatrix(Vector3 scale, Vector3 rotation, Vector3 translation)
+        float yy = q.y * q.y;
+        float yz = q.y * q.z;
+        float yw = q.y * q.w;
+
+        float zz = q.z * q.z;
+        float zw = q.z * q.w;
+
+        m.values[0,0] = 1 - 2 * (yy + zz);
+        m.values[0,1] = 2 * (xy - zw);
+        m.values[0,2] = 2 * (xz + yw);
+
+        m.values[1,0] = 2 * (xy + zw);
+        m.values[1,1] = 1 - 2 * (xx + zz);
+        m.values[1,2] = 2 * (yz - xw);
+
+        m.values[2,0] = 2 * (xz - yw);
+        m.values[2,1] = 2 * (yz + xw);
+        m.values[2,2] = 1 - 2 * (xx + yy);
+
+        return m;
+    }
+
+    public static Matrix4by4 TRSMatrix(Vector3 scale, Quaternion rotation, Vector3 translation)
     {
         return TranslateMatrix(translation) * (RotationMatrix(rotation) * ScaleMatrix(scale));
     }
@@ -438,14 +474,17 @@ namespace Mathsfx
     {
         public float w, x, y, z;
 
-        public Quaternion Identity => new();
+        public static Quaternion Identity => new();
+        // https://stackoverflow.com/questions/18710545/maintaining-rotation-during-quaternion-normalization
+        public float Magnitude => Mathf.Sqrt(x * x + y * y + z * z + w * w);
+        public Quaternion Normalized => new Quaternion(x/Magnitude, y/Magnitude, z/Magnitude, w/Magnitude);
 
         public Quaternion()
         {
-            w = 0;
             x = 0;
             y = 0;
             z = 0;
+            w = 1;
         }
     
         public Quaternion(float angle, Vector3 axis)
@@ -462,6 +501,22 @@ namespace Mathsfx
             x = position.x;
             y = position.y;
             z = position.z;
+        }
+        
+        public Quaternion(float x, float y, float z, float w)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.w = w;
+        }
+        
+        public Quaternion(UnityEngine.Quaternion q)
+        {
+            x = q.x;
+            y = q.y;
+            z = q.z;
+            w = q.w;
         }
     
         public static Quaternion operator* (Quaternion a, Quaternion b)
@@ -590,6 +645,11 @@ namespace Mathsfx
             angles.z = Mathf.Atan2(siny_cosp, cosy_cosp);
 
             return angles;
+        }
+
+        public UnityEngine.Quaternion ToQuaternion()
+        {
+            return new UnityEngine.Quaternion(x, y, z, w);
         }
         
         

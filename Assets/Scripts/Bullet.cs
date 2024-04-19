@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Quaternion = Mathsfx.Quaternion;
 using Vector3 = Mathsfx.Vector3;
 
 public class Bullet : MonoBehaviour
@@ -13,10 +14,10 @@ public class Bullet : MonoBehaviour
 
     private float time;
 
-    public void Setup(Vector3 position, Vector3 rotation, float speed, float lifetime)
+    public void Setup(Vector3 position, Quaternion rotation, float speed, float lifetime)
     {
         transform.position = position.ToVector3();
-        transform.eulerAngles = rotation.ToVector3();
+        transform.rotation = rotation.ToQuaternion();
         this.speed = speed;
         this.lifetime = lifetime;
     }

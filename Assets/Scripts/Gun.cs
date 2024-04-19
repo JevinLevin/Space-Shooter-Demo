@@ -23,7 +23,7 @@ public class Gun : MonoBehaviour
     private void Shoot()
     {
         Bullet newBullet = Instantiate(bullet).GetComponent<Bullet>(); 
-        newBullet.Setup(transformx.position,transformx.rotation,speed,lifetime);        
+        newBullet.Setup(transformx.position,transformx.Rotation,speed,lifetime);        
         
     }
 
