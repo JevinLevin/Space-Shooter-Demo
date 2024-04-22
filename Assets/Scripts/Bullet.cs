@@ -14,12 +14,16 @@ public class Bullet : MonoBehaviour
 
     private float time;
 
-    public void Setup(Vector3 position, Quaternion rotation, float speed, float lifetime)
+    private Vector3 scale;
+
+    public void Setup(Vector3 position, Quaternion rotation, float speed, float lifetime, Vector3 scale)
     {
         transform.position = position.ToVector3();
         transform.rotation = rotation.ToQuaternion();
         this.speed = speed;
         this.lifetime = lifetime;
+
+        SetScale(scale);
     }
 
     private void Update()
@@ -30,5 +34,14 @@ public class Bullet : MonoBehaviour
 
         if (time >= lifetime)
             Destroy(gameObject);
+    }
+
+    private void SetScale(Vector3 scale)
+    {
+        transform.localScale = scale.ToVector3();
+
+        speed /= scale.x;
+
+
     }
 }

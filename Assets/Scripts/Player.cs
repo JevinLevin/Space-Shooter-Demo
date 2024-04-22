@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Vector3 = Mathsfx.Vector3;
 using Quaternion = Mathsfx.Quaternion;
-
+using UnityEditor.Rendering;
 
 public class Player : MonoBehaviour
 {
@@ -18,7 +18,18 @@ public class Player : MonoBehaviour
 
     [SerializeField] private float panSpeed = 3;
     [SerializeField] private float rotSpeed = 2500;
-    [SerializeField] private float scaleSpeed = 3;
+    [SerializeField] private Vector2 scaleBounds = new Vector2 (0.1f, 10f);
+    [SerializeField] private AnimationCurve scaleCurve;
+    [SerializeField] private float startingScale = 0.5f;
+    private float scaleValue;
+
+
+    private bool flipping;
+    [SerializeField] private float flipLength;
+    private float flipTime;
+    private Quaternion flipStart;
+    private Quaternion flipEnd; 
+
 
     [SerializeField] private Transform cameraPivot;
 
@@ -29,6 +40,10 @@ public class Player : MonoBehaviour
     {
         Instance = this;
         targetRotation = transformx.Rotation;
+
+        scaleValue = startingScale;
+        transformx.scale = Vector3.One * Mathf.Lerp(scaleBounds.x, scaleBounds.y, scaleCurve.Evaluate(scaleValue));
+
 
         //Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -45,27 +60,52 @@ public class Player : MonoBehaviour
 
         Vector3 mouseDelta = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0);
 
+        Vector3 spinDirection = Vector3.Cross(Vector3.Forward, mouseDelta);
+        Quaternion quatDirection = new Quaternion(rotSpeed * Time.deltaTime, spinDirection);
 
-        if (Input.GetMouseButton(1) && mouseDelta.Magnitude > 0)
+        if (Input.GetMouseButton(1) && mouseDelta.Magnitude > 0 && !flipping)
         {
-            Vector3 spinDirection = Vector3.Cross(Vector3.Forward, mouseDelta);
-            Quaternion quatDirection = new Quaternion( rotSpeed * Time.deltaTime, spinDirection);
             transformx.Rotation *= quatDirection;
-            cameraPivot.rotation *= quatDirection.ToQuaternion();
-
         }
-        
-        //transformx.rotation = Vector3.Lerp(transformx.rotation, targetRotation,  easeOutCubic(0.1f));
-        //transformx.rotation = Quaternion.Slerp(transformx.QuatRotation, Quaternion.FromEuler(targetRotation), 0.25f).ToEuler();
-
         
         // Scale object based on scroll wheel input
         float scaleInput = Input.GetAxis("Mouse ScrollWheel");
-        transformx.scale += Vector3.One * scaleInput * scaleSpeed;
-        
+        if(scaleInput != 0) 
+        {
+            scaleValue = Mathf.Clamp(scaleValue + scaleInput, 0, 1);
+            transformx.scale = Vector3.One * Mathf.Lerp(scaleBounds.x, scaleBounds.y, scaleCurve.Evaluate(scaleValue));
+        }
+
+        // Flip gun
+        if(Input.GetKeyDown(KeyCode.R) && !flipping)
+        { 
+            flipping = true;
+            flipTime = 0.0f;
+
+            flipStart = transformx.Rotation;
+            flipEnd = flipStart * new Quaternion(180 * Mathf.Deg2Rad, Vector3.Right);
+
+        }
+
+        if(flipping)
+        {
+
+            //flipStart *= quatDirection;
+            //flipEnd *= quatDirection;
+
+            flipTime += Time.deltaTime;
+
+            transformx.Rotation = Quaternion.Slerp(flipStart, flipEnd, easeOutCubic(flipTime / flipLength));
+
+            if (flipTime >= flipLength)
+                flipping = false;
+        }
+
+        cameraPivot.rotation = transformx.Rotation.ToQuaternion();
+
 
     }
-    
+
     private float easeOutCubic(float t)
     {
         return 1 - Mathf.Pow(1 - t, 3);
