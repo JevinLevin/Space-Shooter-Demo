@@ -319,7 +319,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   asteroidPrefab: {fileID: 6036519595030572299, guid: d218ee921662aca4bb59da63e034966b, type: 3}
-  spawnDelay: {x: 1, y: 3}
+  spawnDelay: {x: 0.5, y: 2}
   spawnDistance: {x: 20, y: 50}
 --- !u!4 &719975294
 Transform:
@@ -579,7 +579,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   startingScale: 0.25
-  flipLength: 0.5
+  flipLength: 0.4
   cameraPivot: {fileID: 512211965}
 --- !u!114 &1242482826
 MonoBehaviour:
@@ -595,7 +595,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   transformx: {fileID: 1242482824}
   bullet: {fileID: 9046175936209809776, guid: acc1e641b7132ea4e9042eee514f0113, type: 3}
-  speed: 100
+  speed: 50
   lifetime: 3
 --- !u!1 &1586525557
 GameObject:

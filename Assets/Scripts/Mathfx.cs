@@ -374,10 +374,12 @@ namespace Mathsfx
         return QuaternionToMatrix(rotation);
     }
     
+    
+    // http://www.opengl-tutorial.org/assets/faq_quaternions/index.html#Q54
     public static Matrix4by4 QuaternionToMatrix(Quaternion q)
     {
         Matrix4by4 m = Identity;
-    
+        
         float xx = q.x * q.x;
         float xy = q.x * q.y;
         float xz = q.x * q.z;
@@ -390,17 +392,18 @@ namespace Mathsfx
         float zz = q.z * q.z;
         float zw = q.z * q.w;
 
-        m.values[0,0] = 1 - 2 * (yy + zz);
-        m.values[0,1] = 2 * (xy - zw);
-        m.values[0,2] = 2 * (xz + yw);
 
-        m.values[1,0] = 2 * (xy + zw);
-        m.values[1,1] = 1 - 2 * (xx + zz);
-        m.values[1,2] = 2 * (yz - xw);
+        m.values[0,0]  = 1 - 2 * ( yy + zz );
+        m.values[0,1]  =     2 * ( xy - zw );
+        m.values[0,2]  =     2 * ( xz + yw );
 
-        m.values[2,0] = 2 * (xz - yw);
-        m.values[2,1] = 2 * (yz + xw);
-        m.values[2,2] = 1 - 2 * (xx + yy);
+        m.values[1,0]  =     2 * ( xy + zw );
+        m.values[1,1]  = 1 - 2 * ( xx + zz );
+        m.values[1,2]  =     2 * ( yz - xw );
+
+        m.values[2,0]  =     2 * ( xz - yw );
+        m.values[2,1]  =     2 * ( yz + xw );
+        m.values[2,2] = 1 - 2 * ( xx + yy );
 
         return m;
     }
@@ -536,16 +539,6 @@ namespace Mathsfx
             result.y = vec.y;
             result.z = vec.z;
             
-            //result.w = a.w * b.w - (a.x * b.x + a.y * b.y + a.z * b.z);
-//
-            //Vector3 aVector = new Vector3(a.x, a.y, a.z);
-            //Vector3 bVector = new Vector3(b.x, b.y, b.z);
-            //Vector3 cross = Vector3.Cross(aVector, bVector);
-//
-            //result.x = a.w * b.x + a.x * b.w + cross.x;
-            //result.y = a.w * b.y + a.y * b.w + cross.y;
-            //result.z = a.w * b.z + a.z * b.w + cross.z;
-            
             return result;
 
         }
@@ -596,6 +589,7 @@ namespace Mathsfx
         }
 
 
+        // http://www.opengl-tutorial.org/assets/faq_quaternions/index.html#Q60
         public static Quaternion FromEuler(Vector3 euler)
         {
 
@@ -619,6 +613,7 @@ namespace Mathsfx
             return result;
         }
         
+        // https://stackoverflow.com/a/70462919
         public Vector3 ToEuler()
         {
             Vector3 angles = new();
