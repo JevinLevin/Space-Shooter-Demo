@@ -63,6 +63,7 @@ public class Player : MonoBehaviour
         #region Rotation
         Vector3 mouseDelta = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0);
 
+        // Create angle axis quaternion in mouse delta direction
         Vector3 spinDirection = Vector3.Cross(Vector3.Forward, mouseDelta);
         Quaternion quatDirection = new Quaternion(rotSpeed * Time.deltaTime, spinDirection);
 
@@ -70,6 +71,33 @@ public class Player : MonoBehaviour
         {
             transformx.Rotation *= quatDirection;
         }
+        
+        // Flip gun
+        if(Input.GetKeyDown(KeyCode.R) && !flipping)
+        { 
+            flipping = true;
+            flipTime = 0.0f;
+
+            // Store start and end point 180 degrees upwards
+            flipStart = transformx.Rotation;
+            flipEnd = flipStart * new Quaternion(180 * MathsfxConst.Deg2Rad, Vector3.Right);
+
+        }
+
+        if(flipping)
+        {
+
+            flipTime += Time.deltaTime;
+
+            // Gradually lerp to end position
+            transformx.Rotation = Quaternion.Slerp(flipStart, flipEnd, easeOutCubic(flipTime / flipLength));
+
+            // Removes a tiny bit from the duration so that it doesn't end so slowly (a bit jank)
+            if (flipTime >= flipLength-(flipLength/5))
+                flipping = false;
+        }
+        
+        cameraPivot.rotation = transformx.Rotation.ToQuaternion();
         #endregion
 
         #region  Scale
@@ -82,29 +110,6 @@ public class Player : MonoBehaviour
         }
         #endregion
 
-        // Flip gun
-        if(Input.GetKeyDown(KeyCode.R) && !flipping)
-        { 
-            flipping = true;
-            flipTime = 0.0f;
-
-            flipStart = transformx.Rotation;
-            flipEnd = flipStart * new Quaternion(180 * MathsfxConst.Deg2Rad, Vector3.Right);
-
-        }
-
-        if(flipping)
-        {
-
-            flipTime += Time.deltaTime;
-
-            transformx.Rotation = Quaternion.Slerp(flipStart, flipEnd, easeOutCubic(flipTime / flipLength));
-
-            if (flipTime >= flipLength-(flipLength/5))
-                flipping = false;
-        }
-
-        cameraPivot.rotation = transformx.Rotation.ToQuaternion();
 
 
     }

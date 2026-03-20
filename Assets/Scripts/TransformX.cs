@@ -13,10 +13,8 @@ public class TransformX : MonoBehaviour
     MeshFilter mesh;
     
     public Vector3 position = Vector3.Zero;
-    public Vector3 eulerRotation = Vector3.Zero;
 
     private Quaternion rotation = Quaternion.Identity;
-    // TALK ABOUT PROBLEMS WHEN NOT NORMALIZING
     public Quaternion Rotation
     {
         get => rotation;
@@ -27,6 +25,8 @@ public class TransformX : MonoBehaviour
             eulerRotation = rotation.ToEuler() * MathsfxConst.Rad2Deg;
         }
     }
+    public Vector3 eulerRotation = Vector3.Zero;
+
     public Vector3 scale = Vector3.One;
 
     private Vector3 posBuffer;
@@ -84,9 +84,7 @@ public class TransformX : MonoBehaviour
         Vector3[] worldVertices = modelVertices;
         Vector3[] result = new Vector3[worldVertices.Length];
 
-        Matrix4by4 trsMatrix = Matrix4by4.TRSMatrix(scale, Quaternion.Identity, position);
-        Matrix4by4 rotationMatrix = Matrix4by4.QuaternionToMatrix(rotation);
-        trsMatrix *= rotationMatrix;
+        Matrix4by4 trsMatrix = Matrix4by4.TRSMatrix(scale, rotation, position);
 
         for (int i = 0; i < worldVertices.Length; i++)
         {

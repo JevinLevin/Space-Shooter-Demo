@@ -28,14 +28,16 @@ public class AsteroidSpawner : MonoBehaviour
         {
             // Generate random position in a circle around the player
             float ang = Random.Range(0, 359) * MathsfxConst.Deg2Rad;
+            // Convert radian to vector direction
             Vector3 dir = Vector3.RadToVec(ang).Normalized;
+            // Generate random distance from player
             float distance = Random.Range(spawnDistance.x, spawnDistance.y) * (Random.value < 0.5f ? -1 : 1);
+            // Use direction and distance to calculate position
             Vector3 spawnPosition = Player.Instance.position + (dir * distance);
             
             Asteroid newAsteroid = Instantiate(asteroidPrefab, spawnPosition.ToVector3(), Quaternion.identity, transform).GetComponent<Asteroid>();
         
             newAsteroid.Spawn();
-
 
             yield return new WaitForSeconds(Random.Range(spawnDelay.x, spawnDelay.y));
         }

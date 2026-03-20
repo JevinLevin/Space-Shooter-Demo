@@ -41,7 +41,5 @@ public class Bullet : MonoBehaviour
         transform.localScale = scale.ToVector3();
 
         speed /= scale.x;
-
-
     }
 }

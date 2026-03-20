@@ -21,16 +21,16 @@ public class Score : MonoBehaviour
             UpdateUI();
         }
     }
+    
+    private void UpdateUI()
+    {
+        scoreText.text = score.ToString();
+    }
 
     private void Awake()
     {
         Instance = this;
     }
 
-    private void UpdateUI()
-    {
-        scoreText.text = score.ToString();
-    }
-    
-    
+
 }

@@ -59,7 +59,6 @@ public class Asteroid : MonoBehaviour
             Destroy(gameObject);
         
         
-        
         // Spin
         Vector3[] worldVertices = Vector3.ToFx(mesh.mesh.vertices);
         Vector3[] result = new Vector3[worldVertices.Length];
@@ -83,8 +82,12 @@ public class Asteroid : MonoBehaviour
         if (!other.CompareTag("Bullet")) return;
         
         Score.Instance.PlayerScore++;
+        
+        // Dismount particles then play
         destroyParticles.transform.parent = null;
         destroyParticles.Play();
+        
+        
         Destroy(gameObject);
     }
 

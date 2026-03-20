@@ -212,6 +212,8 @@ namespace Mathsfx
     
     public class Matrix4by4
 {
+    public float[,] values;
+
     public static Matrix4by4 Zero => new(Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero);
     public static Matrix4by4 Identity => new(new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 0));
 
@@ -264,9 +266,7 @@ namespace Mathsfx
         values[2, 3] = c4.z;
         values[3, 3] = c4.w;
     }
-
-    public float[,] values;
-
+    
     public static Vector4 operator *(Matrix4by4 lhs, Vector4 rhs)
     {
         Vector4 result = new Vector4();
@@ -353,17 +353,8 @@ namespace Mathsfx
             new Vector3(0, 1, 0),
             new Vector3(Mathf.Sin(rotation), 0, Mathf.Cos(rotation)),
             new Vector3(0, 0, 0));
-}
-
-    public static Matrix4by4 ScaleMatrix(Vector3 scale)
-    {
-        return new Matrix4by4(
-            new Vector3(scale.x, 0, 0), 
-            new Vector3(0, scale.y, 0), 
-            new Vector3(0, 0, scale.z), 
-            new Vector3(0, 0, 0));
     }
-
+    
     public static Matrix4by4 RotationMatrix(Vector3 rotation)
     {
         return YawMatrix(rotation.y) * (PitchMatrix(rotation.x) * RollMatrix(rotation.z));
@@ -373,6 +364,16 @@ namespace Mathsfx
     {
         return QuaternionToMatrix(rotation);
     }
+
+    public static Matrix4by4 ScaleMatrix(Vector3 scale)
+    {
+        return new Matrix4by4(
+            new Vector3(scale.x, 0, 0), 
+            new Vector3(0, scale.y, 0), 
+            new Vector3(0, 0, scale.z), 
+            new Vector3(0, 0, 0));
+    }
+    
     
     
     // http://www.opengl-tutorial.org/assets/faq_quaternions/index.html#Q54
