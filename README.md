@@ -3,8 +3,11 @@
 ## How To Play
 ### Gameplay
 Mouse to aim.
+
 Click to shoot.
+
 Scroll to scale gun.
+
 WASD to pan gun.
 
 ## How It Works
