@@ -10,6 +10,8 @@ Scroll to scale gun.
 
 WASD to pan gun.
 
+R to flip 180 degrees.
+
 ## How It Works
 Player object uses custom TransformX component, which handles matrix operations and updates the mesh.
 
